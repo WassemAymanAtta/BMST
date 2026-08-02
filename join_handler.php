@@ -3,9 +3,8 @@
 // Join Handler - Save User Data
 // ===========================
 
-// Show errors for debugging (remove in production)
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+// Set header to return JSON
+header('Content-Type: application/json');
 
 // Include database connection
 require_once 'connect.php';
@@ -14,15 +13,12 @@ require_once 'connect.php';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     // Get and secure all form data
-    $name = SecureRequests('name');
-    $age = SecureRequests('age');
-    $phone = SecureRequests('phone');
-    $email = SecureRequests('email');
-    $address = SecureRequests('address');
-    $reason = SecureRequests('reason');
-    
-    // Debug: Log received data
-    error_log("Received: Name=$name, Age=$age, Phone=$phone, Email=$email, Address=$address, Reason=$reason");
+    $name = isset($_POST['name']) ? htmlspecialchars(strip_tags($_POST['name'])) : '';
+    $age = isset($_POST['age']) ? intval($_POST['age']) : 0;
+    $phone = isset($_POST['phone']) ? htmlspecialchars(strip_tags($_POST['phone'])) : '';
+    $email = isset($_POST['email']) ? htmlspecialchars(strip_tags($_POST['email'])) : '';
+    $address = isset($_POST['address']) ? htmlspecialchars(strip_tags($_POST['address'])) : '';
+    $reason = isset($_POST['reason']) ? htmlspecialchars(strip_tags($_POST['reason'])) : '';
     
     // Validate required fields
     if (empty($name) || empty($age) || empty($phone)) {
@@ -41,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ");
         
         // Execute with data
-        $result = $stmt->execute([
+        $stmt->execute([
             ':name' => $name,
             ':age' => $age,
             ':phone' => $phone,
@@ -49,9 +45,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ':address' => $address,
             ':reason' => $reason
         ]);
-        
-        // Debug: Check result
-        error_log("Insert result: " . ($result ? 'SUCCESS' : 'FAILED'));
         
         // Return success response
         echo json_encode([
@@ -61,7 +54,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
     } catch (PDOException $e) {
         // Return error response
-        error_log("Database Error: " . $e->getMessage());
         echo json_encode([
             'success' => false,
             'message' => 'Database error: ' . $e->getMessage()

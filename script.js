@@ -253,13 +253,16 @@ if (joinForm) {
         submitBtn.disabled = true;
 
         // Send data to PHP
-        fetch('join_handler.php', {
+        fetch('./join_handler.php', {
                 method: 'POST',
                 body: formData
             })
-            .then(response => response.json())
+            .then(response => {
+                console.log('Response status:', response.status);
+                return response.json();
+            })
             .then(data => {
-                console.log('Response:', data);
+                console.log('Response data:', data);
                 submitBtn.textContent = originalText;
                 submitBtn.disabled = false;
 
@@ -282,7 +285,7 @@ if (joinForm) {
                 console.error('Fetch error:', error);
                 submitBtn.textContent = originalText;
                 submitBtn.disabled = false;
-                alert('Connection error: ' + error.message);
+                alert('Connection error: ' + error.message + '\nPlease check if the server is running.');
             });
     });
 }
