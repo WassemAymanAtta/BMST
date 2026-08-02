@@ -257,33 +257,3 @@ if (joinForm) {
         }
     });
 }
-
-// ===========================
-// 8. Contact Form Submission
-// ===========================
-
-const contactForm = document.getElementById('contactForm');
-const contactSuccess = document.getElementById('contactSuccess');
-
-if (contactForm) {
-    contactForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-
-        const name = document.getElementById('contactName').value;
-        const email = document.getElementById('contactEmail').value;
-        const message = document.getElementById('contactMessage').value;
-
-        if (name && email && message) {
-            contactForm.style.display = 'none';
-            contactSuccess.style.display = 'block';
-
-            setTimeout(() => {
-                contactForm.reset();
-                contactForm.style.display = 'block';
-                contactSuccess.style.display = 'none';
-            }, 5000);
-        } else {
-            alert('Please fill in all required fields.');
-        }
-    });
-}
