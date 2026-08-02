@@ -3,6 +3,10 @@
 // Join Handler - Save User Data
 // ===========================
 
+// Show errors for debugging (remove in production)
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 // Include database connection
 require_once 'connect.php';
 
@@ -17,11 +21,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $address = SecureRequests('address');
     $reason = SecureRequests('reason');
     
+    // Debug: Log received data
+    error_log("Received: Name=$name, Age=$age, Phone=$phone, Email=$email, Address=$address, Reason=$reason");
+    
     // Validate required fields
     if (empty($name) || empty($age) || empty($phone)) {
         echo json_encode([
             'success' => false,
-            'message' => 'Please fill in all required fields.'
+            'message' => 'Please fill in all required fields: Name, Age, and Phone.'
         ]);
         exit;
     }
@@ -34,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ");
         
         // Execute with data
-        $stmt->execute([
+        $result = $stmt->execute([
             ':name' => $name,
             ':age' => $age,
             ':phone' => $phone,
@@ -42,6 +49,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ':address' => $address,
             ':reason' => $reason
         ]);
+        
+        // Debug: Check result
+        error_log("Insert result: " . ($result ? 'SUCCESS' : 'FAILED'));
         
         // Return success response
         echo json_encode([
@@ -51,6 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
     } catch (PDOException $e) {
         // Return error response
+        error_log("Database Error: " . $e->getMessage());
         echo json_encode([
             'success' => false,
             'message' => 'Database error: ' . $e->getMessage()
@@ -61,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // If not POST request
     echo json_encode([
         'success' => false,
-        'message' => 'Invalid request method.'
+        'message' => 'Invalid request method. Please use POST.'
     ]);
 }
 ?>

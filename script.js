@@ -226,8 +226,7 @@ if (sliderContainer) {
         }
         startAutoPlay();
     });
-}
-// ===========================
+} // ===========================
 // 7. Join Form Submission (With PHP)
 // ===========================
 
@@ -240,6 +239,12 @@ if (joinForm) {
 
         // Get form data
         const formData = new FormData(joinForm);
+
+        // Debug: See what data is being sent
+        console.log('Sending data:');
+        for (let [key, value] of formData.entries()) {
+            console.log(key + ': ' + value);
+        }
 
         // Show loading state
         const submitBtn = joinForm.querySelector('button[type="submit"]');
@@ -254,6 +259,7 @@ if (joinForm) {
             })
             .then(response => response.json())
             .then(data => {
+                console.log('Response:', data);
                 submitBtn.textContent = originalText;
                 submitBtn.disabled = false;
 
@@ -273,6 +279,7 @@ if (joinForm) {
                 }
             })
             .catch(error => {
+                console.error('Fetch error:', error);
                 submitBtn.textContent = originalText;
                 submitBtn.disabled = false;
                 alert('Connection error: ' + error.message);
