@@ -227,9 +227,8 @@ if (sliderContainer) {
         startAutoPlay();
     });
 }
-
 // ===========================
-// 7. Join Form Submission
+// 7. Join Form Submission (With PHP)
 // ===========================
 
 const joinForm = document.getElementById('joinForm');
@@ -239,21 +238,44 @@ if (joinForm) {
     joinForm.addEventListener('submit', function(e) {
         e.preventDefault();
 
-        const name = document.getElementById('joinName').value;
-        const age = document.getElementById('joinAge').value;
-        const phone = document.getElementById('joinPhone').value;
+        // Get form data
+        const formData = new FormData(joinForm);
 
-        if (name && age && phone) {
-            joinForm.style.display = 'none';
-            joinSuccess.style.display = 'block';
+        // Show loading state
+        const submitBtn = joinForm.querySelector('button[type="submit"]');
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = 'Submitting...';
+        submitBtn.disabled = true;
 
-            setTimeout(() => {
-                joinForm.reset();
-                joinForm.style.display = 'block';
-                joinSuccess.style.display = 'none';
-            }, 5000);
-        } else {
-            alert('Please fill in all required fields.');
-        }
+        // Send data to PHP
+        fetch('join_handler.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+
+                if (data.success) {
+                    joinForm.style.display = 'none';
+                    joinSuccess.textContent = '✅ ' + data.message;
+                    joinSuccess.style.display = 'block';
+
+                    // Reset form after 5 seconds
+                    setTimeout(() => {
+                        joinForm.reset();
+                        joinForm.style.display = 'block';
+                        joinSuccess.style.display = 'none';
+                    }, 5000);
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+                alert('Connection error: ' + error.message);
+            });
     });
 }

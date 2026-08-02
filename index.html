@@ -707,64 +707,43 @@
                         </div>
 
                     </div>
-
                     <div class="join-form">
 
-                        <form id="joinForm">
+                        <form id="joinForm" method="POST" action="join_handler.php">
 
                             <div class="form-group">
-
                                 <label>Full Name</label>
-
-                                <input type="text" id="joinName" required>
-
+                                <input type="text" id="joinName" name="name" required>
                             </div>
 
                             <div class="form-group">
-
                                 <label>Age</label>
-
-                                <input type="number" id="joinAge" required>
-
+                                <input type="number" id="joinAge" name="age" required>
                             </div>
 
                             <div class="form-group">
-
                                 <label>Phone Number</label>
-
-                                <input type="tel" id="joinPhone" required>
-
+                                <input type="tel" id="joinPhone" name="phone" required>
                             </div>
 
                             <div class="form-group">
-
                                 <label>Email Address</label>
-
-                                <input type="email" id="joinEmail">
-
+                                <input type="email" id="joinEmail" name="email">
                             </div>
 
                             <div class="form-group">
-
                                 <label>Address</label>
-
-                                <input type="text" id="joinAddress">
-
+                                <input type="text" id="joinAddress" name="address">
                             </div>
 
                             <div class="form-group">
-
                                 <label>Why do you want to join?</label>
-
-                                <textarea id="joinMessage" rows="5"></textarea>
-
+                                <textarea id="joinMessage" name="reason" rows="5"></textarea>
                             </div>
 
                             <button type="submit" class="btn primary-btn">
-
-                                Submit Application
-
-                            </button>
+            Submit Application
+        </button>
 
                         </form>
 
@@ -773,10 +752,6 @@
                         </div>
 
                     </div>
-
-                </div>
-
-            </div>
 
         </section>
 
