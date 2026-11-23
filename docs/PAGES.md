@@ -1,8 +1,12 @@
 # BMST on GitHub Pages
 
-This folder is the **live static site**. GitHub Pages serves it from `main` → `/docs`:
+## Live site
 
-**https://wassemaymanatta.github.io/BMST/**
+**https://bmst-team.github.io/**
+
+Repository: `bmst-team/bmst-team.github.io` (Organization `bmst-team`, owner `WassemAymanAtta`).
+
+The old URL `https://wassemaymanatta.github.io/BMST/` redirects here automatically.
 
 ## How it works
 - No PHP and no backend. The site is pure HTML/CSS/JS.
@@ -10,18 +14,14 @@ This folder is the **live static site**. GitHub Pages serves it from `main` → 
 - `.nojekyll` tells GitHub Pages not to run Jekyll, so files like `script.js` are served untouched.
 
 ## Update the live site
-1. Edit `docs/index.html`, `docs/style.css`, or `docs/script.js`.
+1. Edit `index.html`, `style.css`, or `script.js` in the `bmst-team/bmst-team.github.io` repository.
 2. Commit and push to `main`.
 3. GitHub Pages rebuilds automatically (usually < 1 minute). Check the **Actions** tab for status.
 
-> If you also change the PHP version at the repo root (`index.html`, `script.js`, `style.css`), copy those changes into `docs/` too — or ask the agent to keep both in sync.
-
-## Source of truth
-- Bilingual EN/AR + RTL, light/dark theme, slider, counters, mobile menu — all in `docs/`.
-- The PHP/JSON form endpoint version stays at the repo root and is documented in `deploy/DEPLOY.md`.
+> The PHP/JSON form endpoint version stays in this repository at the repo root, documented in `deploy/DEPLOY.md`. The `docs/` folder here only holds the redirect to the live site.
 
 ## Verification (2026-11-23)
-- Live build from `main` commit `f146d2e`, Pages status `built`.
+- Live build from commit `0a2eaa3`, Pages status `built`.
 - EN and AR both render; `dir` flips to `rtl` for Arabic; theme toggle works.
 - Join + contact forms: validation passes, no backend fetch, WhatsApp opens with the correct pre-filled Arabic/English message to `201125993315`, green fallback link shown.
 - No console errors; Lighthouse 100 / 100 / 100 (accessibility / best practices / SEO).
