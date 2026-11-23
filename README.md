@@ -4,7 +4,8 @@ A bilingual (English / Arabic), responsive single-page site for **Bani Mazar Spo
 
 ## Deployment
 
-- **Free (no PHP, no domain needed):** [`deploy/netlify/NETLIFY.md`](deploy/netlify/NETLIFY.md) with ready-to-drag `deploy/bmst-netlify.zip`. Uses Netlify Forms (100 submissions/month) plus the client-side WhatsApp link.
+- **Live now — GitHub Pages (free):** the static site in `docs/` is served from `main:/docs` at `https://wassemaymanatta.github.io/BMST/`. Forms deliver through the client-side WhatsApp link. Any push to `main` that updates `docs/` redeploys automatically. See [`docs/PAGES.md`](docs/PAGES.md).
+- **Free alternative (no PHP, no domain needed):** [`deploy/netlify/NETLIFY.md`](deploy/netlify/NETLIFY.md) with ready-to-drag `deploy/bmst-netlify.zip`. Uses Netlify Forms (100 submissions/month) plus the client-side WhatsApp link.
 - **Paid PHP hosting (unlimited local storage):** [`deploy/DEPLOY.md`](deploy/DEPLOY.md) with `deploy/bmst-site.zip`.
 
 ## Run locally
