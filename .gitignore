@@ -1,0 +1,3 @@
+/data/*
+!/data/.gitkeep
+/api/config.local.php
