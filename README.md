@@ -2,6 +2,11 @@
 
 A bilingual (English / Arabic), responsive single-page site for **Bani Mazar Sports Team**, with a small PHP endpoint that stores membership applications and contact messages locally.
 
+## Deployment
+
+- **Free (no PHP, no domain needed):** [`deploy/netlify/NETLIFY.md`](deploy/netlify/NETLIFY.md) with ready-to-drag `deploy/bmst-netlify.zip`. Uses Netlify Forms (100 submissions/month) plus the client-side WhatsApp link.
+- **Paid PHP hosting (unlimited local storage):** [`deploy/DEPLOY.md`](deploy/DEPLOY.md) with `deploy/bmst-site.zip`.
+
 ## Run locally
 
 PHP 8.0+ is required (the endpoint uses `str_starts_with()`).
@@ -25,8 +30,7 @@ Opening `index.html` directly with `file://` works for layout and interactions, 
 | `api/application.php` | Validated POST endpoint for both forms |
 | `api/config.php` | Default settings; loads your private overrides |
 | `api/config.local.php` | **Private** WhatsApp credentials (git-ignored) |
-| `api/whatsapp.php` | WhatsApp Cloud API notifier |
-| `api/test-whatsapp.php` | CLI test: sends a sample alert to admins |
+| `api/whatsapp.php` / `api/test-whatsapp.php` | Optional server-side API notifier (disabled by default) |
 | `data/` | Generated at runtime: `applications.php`, `rate-limit.php`, `error.log` |
 | `images/` | Existing BMST images used by the site |
 
@@ -61,52 +65,20 @@ The endpoint:
 
 The data files start with `<?php exit; ?>` so direct HTTP access returns nothing. `data/` is also excluded from Git in `.gitignore` to avoid committing personal information.
 
-## WhatsApp notifications
+## WhatsApp delivery (no API / no token)
 
-Every accepted submission is still stored locally, and can also be pushed instantly to the team's WhatsApp.
+When a visitor submits either form, the site:
 
-### Setup
+1. validates the fields;
+2. opens WhatsApp with the message already typed, addressed to the team admin;
+3. saves the submission locally via `api/application.php`;
+4. keeps a green **Open WhatsApp** button under the form in case the popup was blocked.
 
-1. In **Meta Business Suite → WhatsApp → API Setup**, get:
-   - the temporary or permanent **access token**;
-   - the **Phone number ID** of the WhatsApp business number.
-2. Open `api/config.local.php` and fill in:
-   - `access_token`
-   - `phone_number_id`
-   - `admin_recipients` — admin numbers in international format, e.g. `+201280313993`. In test mode each recipient must be added as a **test recipient** in Meta.
-   - set `enabled` to `true`.
-3. Test it:
+The visitor confirms with one tap on WhatsApp's **Send** button. This is the only way to send without an API — WhatsApp does not allow a website to send a message silently on a visitor's behalf. Because the message comes from the visitor's own WhatsApp account, the admin can reply to them directly.
 
-   ```bash
-   php api/test-whatsapp.php
-   ```
+**Change the WhatsApp number:** edit `data-whatsapp` on the `<body>` tag in `index.html` (digits only, country code included — currently `201125993315`). The contact and footer phone links should be updated to match.
 
-You should see `"sent": 1` (or the number of admins) and the message will arrive on WhatsApp. Failed delivery is logged to `data/error.log` but never breaks the visitor's form submission.
-
-### Important: text vs template
-
-- With **test recipients**, plain text messages work immediately (the default).
-- For **production recipients**, WhatsApp only allows business-initiated messages using an **approved template**. In `config.local.php`, set `template.name` to your approved template name and `template.language` to its language code. The template must have exactly four body variables:
-
-  ```
-  {{1}} - alert title
-  {{2}} - sender name
-  {{3}} - phone / email / wa.me link
-  {{4}} - details and time
-  ```
-
-  Example template body:
-
-  ```
-  {{1}}
-  {{2}}
-
-  {{3}}
-
-  {{4}}
-  ```
-
-The `access_token` and `phone_number_id` stay in `api/config.local.php`, which is git-ignored. Meta tokens expire — if notifications silently stop, generate a new token and update that file.
+The optional server-side API notifier remains in `api/whatsapp.php` but is **disabled by default** (`enabled => false` in `api/config.local.php`) to avoid duplicate messages. Only enable it if you later obtain Meta WhatsApp Cloud API credentials.
 
 ## Customisation
 

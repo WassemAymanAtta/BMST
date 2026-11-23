@@ -1444,6 +1444,30 @@ h1, h2, h3, h4, p {
 .form-status.is-success { color: var(--brand); }
 .form-status.is-error { color: var(--danger); }
 
+.whatsapp-fallback {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    margin-block-start: 10px;
+    padding: 11px 18px;
+    border-radius: 10px;
+    background: #25d366;
+    color: #06291a;
+    font-size: .88rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: background .2s ease, transform .2s ease;
+}
+
+.whatsapp-fallback:hover {
+    background: #1ebd59;
+    transform: translateY(-2px);
+}
+
+.whatsapp-fallback[hidden] { display: none; }
+
 .form-fineprint {
     color: var(--muted);
     font-size: .74rem;

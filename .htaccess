@@ -1,0 +1,22 @@
+# BMST — Apache production rules
+# The PHP built-in server ignores this file; shared Apache hosting uses it.
+
+Options -Indexes
+AddDefaultCharset UTF-8
+
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "DENY"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# Private files must never be served directly over HTTP.
+<FilesMatch "^(config\.local\.php|test-whatsapp\.php)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>

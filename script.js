@@ -218,7 +218,9 @@
             'status.copied': 'Copied to clipboard',
             'status.copyFailed': 'Could not copy — please copy it manually',
             'status.network': 'Could not reach the server. Please try again.',
-            'status.generic': 'Something went wrong. Please try again later.'
+            'status.generic': 'Something went wrong. Please try again later.',
+            'status.whatsappOpen': 'WhatsApp is opening — press send there to reach the team.',
+            'status.whatsappLink': 'Open WhatsApp'
         },
 
         ar: {
@@ -429,12 +431,17 @@
             'status.copied': 'تم النسخ إلى الحافظة',
             'status.copyFailed': 'تعذّر النسخ، يرجى النسخ يدوياً',
             'status.network': 'تعذّر الاتصال بالخادم. يرجى المحاولة مرة أخرى.',
-            'status.generic': 'حدث خطأ غير متوقع. يرجى المحاولة لاحقاً.'
+            'status.generic': 'حدث خطأ غير متوقع. يرجى المحاولة لاحقاً.',
+            'status.whatsappOpen': 'جاري فتح واتساب — اضغط إرسال هناك لتصل رسالتك للفريق.',
+            'status.whatsappLink': 'فتح واتساب'
         }
     };
 
     const root = document.documentElement;
     const reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Admin WhatsApp number. Change `data-whatsapp` on <body> to update it.
+    const WHATSAPP_NUMBER = (String((document.body && document.body.dataset.whatsapp) || '').replace(/\D/g, '') || '201125993315');
 
     let lang = (function () {
         try {
@@ -908,6 +915,7 @@
         'join-form': {
             type: 'join',
             statusId: 'join-status',
+            whatsappId: 'join-whatsapp',
             successKey: 'status.joinSuccess',
             fields: {
                 name: true,
@@ -921,6 +929,7 @@
         'contact-form': {
             type: 'contact',
             statusId: 'contact-status',
+            whatsappId: 'contact-whatsapp',
             successKey: 'status.contactSuccess',
             fields: {
                 name: true,
@@ -985,6 +994,64 @@
         return payload;
     }
 
+    function formValue(form, name) {
+        const el = form.elements[name];
+        return el ? String(el.value || '').trim() : '';
+    }
+
+    /**
+     * WhatsApp click-to-chat: no API or token needed. The visitor's WhatsApp
+     * opens with the message ready, and they confirm with one tap on Send.
+     */
+    function whatsappUrl(message) {
+        return 'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent(message);
+    }
+
+    function buildWhatsappMessage(form, config) {
+        const arabic = lang === 'ar';
+        const join = config.type === 'join';
+        const lines = [];
+
+        lines.push('*' + (arabic
+            ? (join ? 'طلب انضمام جديد - BMST' : 'رسالة تواصل جديدة - BMST')
+            : (join ? 'New membership application - BMST' : 'New contact message - BMST')) + '*');
+        lines.push((arabic ? 'الاسم: ' : 'Name: ') + formValue(form, 'name'));
+
+        const phone = formValue(form, 'phone');
+        const email = formValue(form, 'email');
+        if (phone) lines.push((arabic ? 'الهاتف: ' : 'Phone: ') + phone);
+        if (email) lines.push((arabic ? 'الإيميل: ' : 'Email: ') + email);
+
+        if (join) {
+            const age = formValue(form, 'age');
+            const address = formValue(form, 'address');
+            const reason = formValue(form, 'reason');
+            if (age) lines.push((arabic ? 'العمر: ' : 'Age: ') + age);
+            if (address) lines.push((arabic ? 'الحي: ' : 'Area: ') + address);
+            if (reason) lines.push((arabic ? 'السبب: ' : 'Reason: ') + reason);
+        } else {
+            lines.push((arabic ? 'الموضوع: ' : 'Subject: ') + formValue(form, 'subject'));
+            lines.push((arabic ? 'الرسالة: ' : 'Message: ') + formValue(form, 'message'));
+        }
+
+        return lines.join('\n');
+    }
+
+    function showWhatsappLink(form, url) {
+        const link = document.getElementById(FORM_CONFIG[form.id].whatsappId);
+        if (!link) return;
+        link.href = url;
+        link.hidden = false;
+    }
+
+    function openWhatsapp(url) {
+        try {
+            window.open(url, '_blank', 'noopener,noreferrer');
+        } catch (err) {
+            /* The visible fallback link remains available. */
+        }
+    }
+
     Object.keys(FORM_CONFIG).forEach(function (formId) {
         const form = document.getElementById(formId);
         if (!form) return;
@@ -1011,6 +1078,9 @@
             clearFormErrors(form);
             setFormStatus(form, '', '');
 
+            const fallback = document.getElementById(config.whatsappId);
+            if (fallback) fallback.hidden = true;
+
             let firstInvalid = null;
             const errors = {};
 
@@ -1029,6 +1099,10 @@
                 firstInvalid.focus();
                 return;
             }
+
+            const whatsappLink = whatsappUrl(buildWhatsappMessage(form, config));
+            showWhatsappLink(form, whatsappLink);
+            openWhatsapp(whatsappLink);
 
             const button = form.querySelector('button[type="submit"]');
             if (button) {
@@ -1059,9 +1133,9 @@
                 .then(function (data) {
                     form.reset();
                     clearFormErrors(form);
-                    const message = data.message || t(config.successKey);
-                    setFormStatus(form, message, 'success');
-                    showToast(message, 'success');
+                    const saved = data.message || t(config.successKey);
+                    setFormStatus(form, saved + ' ' + t('status.whatsappOpen'), 'success');
+                    showToast(saved, 'success');
                 })
                 .catch(function (error) {
                     const message = error.serverMessage || (error instanceof TypeError ? t('status.network') : t('status.generic'));

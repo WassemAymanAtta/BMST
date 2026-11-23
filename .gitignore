@@ -1,3 +1,4 @@
 /data/*
 !/data/.gitkeep
+!/data/.htaccess
 /api/config.local.php
