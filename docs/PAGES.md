@@ -19,3 +19,10 @@ This folder is the **live static site**. GitHub Pages serves it from `main` → 
 ## Source of truth
 - Bilingual EN/AR + RTL, light/dark theme, slider, counters, mobile menu — all in `docs/`.
 - The PHP/JSON form endpoint version stays at the repo root and is documented in `deploy/DEPLOY.md`.
+
+## Verification (2026-11-23)
+- Live build from `main` commit `f146d2e`, Pages status `built`.
+- EN and AR both render; `dir` flips to `rtl` for Arabic; theme toggle works.
+- Join + contact forms: validation passes, no backend fetch, WhatsApp opens with the correct pre-filled Arabic/English message to `201125993315`, green fallback link shown.
+- No console errors; Lighthouse 100 / 100 / 100 (accessibility / best practices / SEO).
+- All images return HTTP 200.
